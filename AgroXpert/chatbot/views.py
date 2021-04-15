@@ -1,5 +1,6 @@
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+from django.http import JsonResponse
 set_pairs = [#vandana
 ['Hi,Hello','Hello, this is AgroXpert chatbot.What is your query?'],
 ['quit,bye','I am always there at your service'],
@@ -39,7 +40,7 @@ chatbots = ChatBot(name='AgroXpert', read_only=True,
                      {
                          'import_path': 'chatterbot.logic.BestMatch',
                      'default_response': 'I am sorry, I do not understand. I am still learning. Please contact abc@xxx.com for further assistance.',
-                     'maximum_similarity_threshold': 0.7
+                     'maximum_similarity_threshold': 0.5
 
                          }])
 trainer = ListTrainer(chatbots)
@@ -50,9 +51,19 @@ from django.shortcuts import render
 
 # Create your views here.
 def Chatbots(request):
+    print("req")
     Reply=""
     query=""
+    data=""
+    response={}
     if request.method=="POST":
+
         query=request.POST["Search"]
         Reply=chatbots.get_response(query)
-    return(render(request,'chatbot.html',{"Reply":Reply,"query":query}))
+        print(query,Reply)
+        data=str(Reply)
+        print(type(data))
+        return JsonResponse({'query':query,'Reply':data})
+    return render(request, 'chatbot.html')
+    
+    
